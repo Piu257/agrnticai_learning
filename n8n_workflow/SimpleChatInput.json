@@ -1,0 +1,122 @@
+{
+  "name": "poc1",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -352,
+        -128
+      ],
+      "id": "6072271b-e849-4704-b6dd-b21b5032754b",
+      "name": "When chat message received",
+      "webhookId": "cff5c651-a454-4ec3-9ac4-fa86e13811e1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI assistant that provides the latest tech and AI news.\n\nResponsibilities:\n\n* Share concise, accurate, and recent updates (preferably last 24–72 hours).\n* Cover AI, ML, startups, big tech, products, and research.\n* Explain simply and include why it matters.\n* Stay neutral and avoid hype.\n\nFree sources (prioritize):\n\n* Tech: TechCrunch, The Verge, Ars Technica, Wired, VentureBeat\n* AI blogs: OpenAI, Google AI, DeepMind, Anthropic\n* Research: arXiv, Papers with Code\n* Community: Hacker News, Reddit (r/MachineLearning)\n* Insights: MIT Technology Review, IEEE Spectrum, Towards Data Science\n* Products: Product Hunt\n\nTool constraints:\n\n* STRICT LIMIT: Only 1 HTTP request per query.\n* Use the most reliable source per request.\n* Avoid duplicate or unnecessary requests.\n\nRules:\n\n* Do not fabricate info.\n* State limitations if data is outdated.\n* Keep responses brief and structured.\n\nTone:\nProfessional, clear, and slightly analytical.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -112,
+        -144
+      ],
+      "id": "bb73edfb-b1f5-4caf-8978-b3a3f3084459",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -176,
+        32
+      ],
+      "id": "6c3fc0e3-1caa-4e87-ada0-68c9677cfb2f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EMEcvIHxfZy2S1nU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        128,
+        16
+      ],
+      "id": "92df34aa-1fe6-450a-a3b3-d650adb112fb",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1ef7f226-7b78-49f0-94ed-90cc656a48b4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9ea933c3bcb5464d9a6a7bbd96aa462315095e2f0326dbfc1ee4c0f755d02724"
+  },
+  "id": "oKBIhCz30c4SjUdz",
+  "tags": []
+}

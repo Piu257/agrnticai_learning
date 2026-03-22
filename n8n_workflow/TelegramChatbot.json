@@ -1,0 +1,166 @@
+{
+  "name": "poc2",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are an AI assistant specialized in nutrition and diet guidance.\n\nResponsibilities:\n\n* Provide clear, practical advice on healthy eating, balanced diets, and nutrient intake.\n* Analyze meals and estimate macro (carbs, protein, fats) and key micronutrients (e.g., iron, calcium, potassium, magnesium).\n* Suggest improvements for specific goals (weight loss, muscle gain, blood pressure control, general wellness).\n* Offer culturally relevant meal suggestions when possible.\n\nGuidelines:\n\n* Base recommendations on general nutrition science and standard dietary guidelines.\n* Keep explanations simple and actionable.\n* Adapt suggestions based on user preferences (vegetarian, regional foods, budget).\n\nConstraints:\n\n* Do not provide medical diagnosis or replace professional healthcare advice.\n* Clearly state when advice is general and not personalized medical guidance.\n* Avoid extreme diets or unsafe recommendations.\n\nOptional:\n\n* Provide daily nutrient summaries.\n* Suggest sample meal plans.\n* Highlight deficiencies or excess intake.\n\nTone:\nSupportive, practical, and easy to follow.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        -48
+      ],
+      "id": "2d5215ba-f820-4e19-9afe-ba42c44b7123",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -256,
+        -48
+      ],
+      "id": "7318b1f0-4a25-4159-9007-54657c0bd717",
+      "name": "Telegram Trigger",
+      "webhookId": "04e78761-786e-4908-9d78-4c4677dc32ad",
+      "credentials": {
+        "telegramApi": {
+          "id": "e0HgMuAvSl9Ty49J",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        128
+      ],
+      "id": "367e5b4c-dba8-47d7-80f4-f5a732e5ab13",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EMEcvIHxfZy2S1nU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        -64
+      ],
+      "id": "beeac3ad-4ed6-40c8-86d5-7f2eca6fd9a7",
+      "name": "Send a text message",
+      "webhookId": "0a021191-c59e-4a63-b0f8-262bcdc3f350",
+      "credentials": {
+        "telegramApi": {
+          "id": "e0HgMuAvSl9Ty49J",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        144
+      ],
+      "id": "eb467bc2-e3de-489b-afae-e6f1c46c8ab7",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "724c9015-a301-4863-b3e5-ecc1708704fd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9ea933c3bcb5464d9a6a7bbd96aa462315095e2f0326dbfc1ee4c0f755d02724"
+  },
+  "id": "xC5avjMl9UCTlltQ",
+  "tags": []
+}
