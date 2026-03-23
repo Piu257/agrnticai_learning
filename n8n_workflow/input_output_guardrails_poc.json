@@ -1,0 +1,386 @@
+{
+  "name": "input_output_guardrails_poc",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Input guard').item.json.output.topic }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a creative AI that writes engaging kids stories.\n\nRules:\n- Target age: 3–12 years\n- Tone: simple, imaginative, positive, and fun\n- Use short sentences and easy vocabulary\n- Include:\n  - A clear beginning, middle, and end\n  - Friendly characters (animals, kids, magical beings)\n  - A moral or positive lesson\n- Avoid:\n  - Violence, fear, sadness, or complex themes\n  - Any inappropriate or adult content\n\nStyle:\n- Use vivid but simple descriptions\n- Add dialogue where helpful\n- Keep story length moderate (300–600 words unless specified)\n\nAlways prioritize safety, kindness, and creativity."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -64,
+        -288
+      ],
+      "id": "dc3f8856-cc3d-427b-9051-0a092dde2f9b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        -288
+      ],
+      "id": "bdabfe08-3829-40b1-90ab-3fa779833dd6",
+      "name": "Telegram Trigger",
+      "webhookId": "6c05238f-60df-4e0b-bf37-86062a2d5898",
+      "credentials": {
+        "telegramApi": {
+          "id": "e0HgMuAvSl9Ty49J",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        16
+      ],
+      "id": "483ff5a5-1c1f-4c9f-b26d-558aa9f46a8e",
+      "name": "Send a text message",
+      "webhookId": "28421b77-e205-4cdf-9444-56bf668520ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "e0HgMuAvSl9Ty49J",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        8,
+        -64
+      ],
+      "id": "49477497-6d26-417b-a856-a56f139d0e65",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EMEcvIHxfZy2S1nU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "gpt-4"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -632,
+        -64
+      ],
+      "id": "1d231c45-2b7e-499f-ad85-494ace86fb3e",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "EMEcvIHxfZy2S1nU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        360,
+        -64
+      ],
+      "id": "45178213-0c26-404d-9a88-c2b95679a0ca",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "EMEcvIHxfZy2S1nU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an Input Guard for a kids story writing AI.  Your job is to: - Accept only safe, appropriate prompts for children (age 3–12). - Reject or sanitize inputs containing:   - Violence, horror, abuse   - Sexual or explicit content   - Hate speech or discrimination   - Dangerous or illegal activities - If unsafe, rewrite the prompt into a child-friendly version OR return:   \"Input rejected: not مناسب for children.\"  Keep responses short. Do not generate stories. Only validate or clean the input.\nThe response structure should be a json output {\"topic\":\"waterfall\", \"status\":\"passed/rejected\"}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -640,
+        -288
+      ],
+      "id": "06e093aa-3460-45ce-8788-658578c46e71",
+      "name": "Input guard"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an Output Guard for a kids story AI.  Your job is to: - Review the generated story before final output - Ensure content is:   - Safe and age-appropriate (3–12)   - Free from violence, horror, sexual, or harmful themes - If issues are found:   - Modify the story to make it safe and child-friendly - Ensure tone is positive and includes a good message  Do NOT add new complex elements. Do NOT explain your changes.  Return only the final safe story."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        288,
+        -288
+      ],
+      "id": "6636fe88-2956-4118-8686-5d120003eb35",
+      "name": "Output guard"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0b61039f-bce7-484f-86c8-1f990bd909e2",
+              "leftValue": "={{ $json.output.status }}",
+              "rightValue": "passed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        -288
+      ],
+      "id": "59f25f62-0d8e-46f8-a585-e7b1e22a6c13",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"topic\": {\n            \"type\": \"string\"\n        },\n        \"status\": {\n            \"type\": \"string\"\n        }\n    },\n    \"required\": [\"topic\", \"status\"],\n    \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -368,
+        -48
+      ],
+      "id": "7b28d703-172e-410c-a101-e418f589bf20",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }} {{ $('Input guard').item.json.output.topic }} is {{ $('Input guard').item.json.output.status }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        96
+      ],
+      "id": "64945e8a-e815-407d-9598-e56e936f4a7f",
+      "name": "Send a text message1",
+      "webhookId": "28421b77-e205-4cdf-9444-56bf668520ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "e0HgMuAvSl9Ty49J",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Output guard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Input guard",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Output guard",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input guard": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output guard": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Input guard",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5139fa59-7bd3-4822-ae9f-e835d7e62c54",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9ea933c3bcb5464d9a6a7bbd96aa462315095e2f0326dbfc1ee4c0f755d02724"
+  },
+  "id": "UsGe8O8bJ3nHTVys",
+  "tags": []
+}
