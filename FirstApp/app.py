@@ -11,13 +11,11 @@ user_input = input("Provide details about your health symptoms: ")
 
 prompt = f"Based on the following symptoms, provide a possible diagnosis and recommended next steps: {user_input}"  
 
-response = client.chat.completions.create(
-    model="gpt-4",
-    messages=[
-        {"role": "user", "content": prompt}
-    ],
+response = client.responses.create(
+    model="gpt-4o-mini",
+    input= prompt,
     temperature=0.4,
     timeout=10
 )
 
-print("Response from OpenAI API:", response.choices[0].message.content)
+print("Response from OpenAI API:", response)

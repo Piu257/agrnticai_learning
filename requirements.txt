@@ -1,2 +1,14 @@
 python-dotenv
+langchain
+langchain_core
 openai
+langchain_openai
+langchain_google_genai
+langchain_huggingface
+transformers
+sentence-transformers
+huggingface_hub
+numpy
+scikit-learn
+
+
