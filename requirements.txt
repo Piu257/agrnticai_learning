@@ -16,5 +16,7 @@ pydantic
 grandalf
 pypdf
 beautifulsoup4
+langchain_experimental
+
 
 
