@@ -18,6 +18,9 @@ pypdf
 beautifulsoup4
 langchain_experimental
 chromadb
+wikipedia
+faiss-cpu
+
 
 
 
