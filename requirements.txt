@@ -20,7 +20,7 @@ langchain_experimental
 chromadb
 wikipedia
 faiss-cpu
-
-
+duckduckgo-search
+ddgs
 
 
